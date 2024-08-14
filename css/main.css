@@ -1,0 +1,55 @@
+/*
+ * MikoPBX - free phone system for small business
+ * Copyright © 2017-2024 Alexey Portnov and Nikolay Beketov
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.
+ * If not, see <https://www.gnu.org/licenses/>.
+ */
+
+body {
+    background-color: rgba(0, 0, 0, 0); /* Прозрачный фон */
+    margin: 0;
+    overflow: hidden;
+}
+
+.transparent-bg {
+    background-color: rgba(0, 0, 0, 0); /* Полностью прозрачный фон */
+    pointer-events: none; /* Игнорируем события указателя для этого элемента */
+}
+
+.content {
+    position: relative; /* Позиционирование контента */
+    z-index: 1; /* Убедитесь, что контент выше прозрачного фона */
+    pointer-events: auto; /* События указателя обрабатываются для этого элемента */
+}
+
+#app {
+    width: 450px;
+}
+#app .row.m-first {
+    padding-bottom: 10px;
+}
+#app .row.m-end {
+    padding-bottom: 0px;
+}
+#app .row.m-two {
+    padding-top: 0;
+}
+
+#app .m-c-pointer {
+    cursor: pointer;
+}
+
+#app .m-padding-0 {
+    padding: 0;
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="css/vendor/fomantic/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <script src="js/vendor/jssip-3.10.0.js" type="text/javascript"></script>
+    <script src="js/vendor/jquery-3.6.0.min.js" type="text/javascript"></script>
+    <script src="js/vendor/moment.js" type="text/javascript"></script>
+    <script src="js/vendor/vue.js" type="text/javascript"></script>
+    <script src="js/vendor/vue-i18n.js" type="text/javascript"></script>
+    <script src="js/sip.js" type="text/javascript"></script>
+    <script src="js/application.js" type="text/javascript"></script>
+    <script src="js/vendor/fomantic/semantic.min.js" type="text/javascript"></script>
+</head>
+<body class="transparent-opacity">
+
+<div id="app" class="content ui container segment grid">
+    <div class="row m-first">
+        <div class="left floated three wide column">
+<!--            <kbd class="ui basic label m-c-pointer">X</kbd>-->
+        </div>
+        <div class="right floated right aligned thirteen wide column">
+            <kbd v-bind:class="{green: status==='Ready', red: status==='RegistrationFailed'}" class="ui basic label">{{ settings.currentPhone }}@{{ settings.pbxHost }}</kbd>
+            <kbd v-on:click="showSettings" v-bind:class="{ inverted: settings.isActive }" class="ui icon label m-c-pointer"><i class="tools icon"></i></kbd>
+        </div>
+    </div>
+    <div class="row m-two">
+        <div class="column">
+            <div class="ui fluid icon input">
+                <input v-on:keyup.enter="dial" type="text" placeholder="">
+                <i class="phone icon"></i>
+            </div>
+        </div>
+    </div>
+    <div class="ui segment three grid special popup numpad">
+        <div class="row m-first m-two">
+            <div class="column m-padding-0">
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">1</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">2</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">3</kbd>
+            </div>
+        </div>
+        <div class="row m-first m-two">
+            <div class="column m-padding-0">
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">4</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">5</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">6</kbd>
+            </div>
+        </div>
+        <div class="row m-first m-two">
+            <div class="column m-padding-0">
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">7</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">8</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">9</kbd>
+            </div>
+        </div>
+        <div class="row m-end m-two">
+            <div class="column m-padding-0">
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">*</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">0</kbd>
+                <kbd v-on:click="dtmf" class="ui basic label large m-c-pointer">#</kbd>
+            </div>
+        </div>
+    </div>
+    <div v-if="settings.isActive" class="row">
+        <div class="column">
+            <div class="ui column form  message segment">
+                <div class="field">
+                    <label>{{$t('settings.pbxHost')}}</label>
+                    <input type="text" v-model="settings.pbxHost" name="settings.pbxHost" placeholder="">
+                </div>
+                <div class="field">
+                    <label>{{$t('settings.currentPhone')}}</label>
+                    <input type="text" v-model="settings.currentPhone" name="settings.currentPhone" placeholder="">
+                </div>
+                <div class="field">
+                    <label>{{$t('settings.sipPassword')}}</label>
+                    <input type="text" v-model="settings.sipPassword" name="settings.sipPassword" placeholder="">
+                </div>
+                <kbd v-on:click="saveSettings" class="ui label m-c-pointer">{{$t('settings.save')}}</kbd>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="column">
+            <div v-for="call in calls" :key="call.id" class="ui container message segment">
+                <h4 class="ui header">
+                    <i v-bind:class="{'sign in': call.isIncoming, 'log out': call.isIncoming === false}" class="icon"></i>
+                    <div class="content">
+                        {{ call.display_name }} {{ call.user }}
+                        <div class="sub header">{{ call.status }}</div>
+                        <div class="sub header">{{ call.duration }}</div>
+                    </div>
+                </h4>
+                <kbd v-if="call.isAnswered === false && call.isIncoming === true" v-on:click="answer" :data-session-id="call.id" class="ui green label m-c-pointer">{{$t('callCommands.answer')}}</kbd>
+                <kbd v-on:click="hold" :data-session-id="call.id" class="ui blue icon label m-c-pointer">
+                    <i v-if="call.isHold" class="hand paper outline icon"></i>
+                    {{$t('callCommands.hold')}}
+                </kbd>
+                <kbd v-if="call.isAnswered === true"  v-on:click="showDialPad" :data-session-id="call.id" class="ui icon label m-c-pointer numpad"><i class="th icon"></i></kbd>
+                <kbd v-on:click="hangup" :data-session-id="call.id" class="ui red label m-c-pointer">{{$t('callCommands.hangup')}}</kbd>
+            </div>
+        </div>
+    </div>
+    <audio id="sipRemoteAudio"></audio>
+</div>
+
+
+</body>
+</html>
