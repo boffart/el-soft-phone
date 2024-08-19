@@ -51,26 +51,27 @@ $(document).ready(() => {
                 isActive: false,
             },
             calls: [
-                // {
-                //     id: 1,
-                //     display_name: 'Alexey',
-                //     user: '201',
-                //     direction: 'outgoing',
-                //     isIncoming: false,
-                //     status: 'Call',
-                //     start : new Date().getTime(),
-                //     duration: '',
-                // },
-                // {
-                //     id: 2,
-                //     display_name: 'Petr',
-                //     user: '202',
-                //     direction: 'incoming',
-                //     isIncoming: true,
-                //     status: 'Call',
-                //     start : new Date().getTime(),
-                //     duration: '',
-                // },
+            //     {
+            //         id: 1,
+            //         display_name: 'Alexey',
+            //         user: '201',
+            //         direction: 'outgoing',
+            //         isIncoming: false,
+            //         status: 'Call',
+            //         start : new Date().getTime(),
+            //         duration: '',
+            //         isAnswered: true
+            //     },
+            //     {
+            //         id: 2,
+            //         display_name: 'Petr',
+            //         user: '202',
+            //         direction: 'incoming',
+            //         isIncoming: true,
+            //         status: 'Call',
+            //         start : new Date().getTime(),
+            //         duration: '',
+            //     },
             ]
         },
         methods: {
@@ -129,6 +130,7 @@ $(document).ready(() => {
                 ctxSip.dial(dst);
             },
             dtmf: function (event){
+                event.stopPropagation();
                 let sessionId = $(event.target).parents('.container.message.segment').find('kbd.numpad').attr('data-session-id')
                 let val = $(event.target).text();
                 ctxSip.playDtmfTone(sessionId, val);
@@ -139,10 +141,18 @@ $(document).ready(() => {
                     sessionId = $(event.target).parent().attr('data-session-id');
                 }
                 let labelNumpad = $(`kbd.label.numpad[data-session-id="${sessionId}"]`);
+                if(labelNumpad.popup("is visible")){
+                    return;
+                }
+                let popupClone = $('.popup.numpad').clone();
+                popupClone.find('kbd').on('click', this.dtmf);
+                labelNumpad.append(popupClone);
+
                 labelNumpad.popup({
                     position: 'top center',
-                    popup : $('.popup.numpad'),
-                    on    : 'click'
+                    popup : popupClone,
+                    on    : 'click',
+                    closable: false
                 });
                 labelNumpad.popup('show')
             },
@@ -150,6 +160,6 @@ $(document).ready(() => {
         }
     });
     widget.loadSettings();
-
-    ctxSip.start(widget);
+    window.ctxSip = new SipClient();
+    window.ctxSip.start(widget);
 });

@@ -27,14 +27,9 @@ body {
     pointer-events: none; /* Игнорируем события указателя для этого элемента */
 }
 
-.content {
-    position: relative; /* Позиционирование контента */
-    z-index: 1; /* Убедитесь, что контент выше прозрачного фона */
-    pointer-events: auto; /* События указателя обрабатываются для этого элемента */
-}
-
 #app {
-    width: 450px;
+    /*width: 450px;*/
+    margin: 0;
 }
 #app .row.m-first {
     padding-bottom: 10px;

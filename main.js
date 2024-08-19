@@ -6,7 +6,7 @@ app.commandLine.appendSwitch('disable-gpu');
 
 function createWindow () {
   const win = new BrowserWindow({
-    width: 800,
+    width: 500,
     height: 600,
     transparent:true,
     frame: false,
@@ -17,31 +17,31 @@ function createWindow () {
       nodeIntegration: false,
     }
   });
-  // Обрабатываем событие завершения загрузки
-  win.webContents.on('did-finish-load', () => {
-    win.webContents.executeJavaScript(`
-            console.log('Executing JavaScript in renderer');
-            try {
-                document.addEventListener('DOMContentLoaded', () => {
-                    const transparentBg = document.querySelector('.transparent-bg');
-                    if (transparentBg) {
-                        transparentBg.style.pointerEvents = 'none'; // Игнорируем события указателя для этого элемента
-                        console.log('Pointer events updated');
-                    } else {
-                        console.error('Element .transparent-bg not found');
-                    }
-                });
-            } catch (error) {
-                console.error('Error executing script:', error);
-            }
-        `).catch(error => {
-      console.error('Error executing JavaScript in renderer:', error);
-    });
-  });
-
   win.loadFile('index.html');
 
+  // Автоматически изменяет высоту окна после загрузки содержимого
+  mainWindow.webContents.on('did-finish-load', () => {
+    adjustWindowHeight(mainWindow);
+  });
+
+  // Слушаем изменения размеров окна при изменении содержимого
+  mainWindow.webContents.on('did-frame-finish-load', () => {
+    adjustWindowHeight(mainWindow);
+  });
+
+  function adjustWindowHeight(window) {
+    window.webContents.executeJavaScript('document.body.scrollHeight')
+        .then(contentHeight => {
+          const currentBounds = window.getBounds();
+          window.setBounds({
+            ...currentBounds,
+            height: contentHeight + 40 // Добавляем 40 пикселей для отступов и рамок
+          });
+        });
+  }
 }
+
+
 
 app.whenReady().then(() => {
   setTimeout(function() {
